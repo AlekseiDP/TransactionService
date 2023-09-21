@@ -1,10 +1,10 @@
 package account
 
 import (
-	"TransactionService/internal/adapters"
 	"TransactionService/internal/adapters/api"
+	"TransactionService/internal/adapters/middleware"
+	"TransactionService/internal/domain/errors/serviceError"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 const (
@@ -12,6 +12,7 @@ const (
 	listAccountPageUrl = "/accounts/paginated"
 )
 
+// handler структура для обработки Http запросов
 type handler struct {
 	accountService Service
 }
@@ -21,43 +22,27 @@ func NewHandler(service Service) api.Handler {
 }
 
 func (h *handler) Register(engine *gin.Engine) {
-	engine.POST(createAccountUrl, h.CreateAccount)
-	engine.GET(listAccountPageUrl, h.ListAccountPage)
+	engine.POST(createAccountUrl, middleware.Middleware(h.CreateAccount))
+	engine.GET(listAccountPageUrl, middleware.Middleware(h.ListAccountPage))
 }
 
-func (h *handler) CreateAccount(c *gin.Context) {
-	// Модель ответа
-	result := adapters.ApiResult{}
-
+func (h *handler) CreateAccount(c *gin.Context) (any, error) {
 	// Получение входных данных
 	createAccountDto := CreateAccountDto{}
 	if err := c.ShouldBindJSON(&createAccountDto); err != nil {
-		result.ErrorCode = "UNKNOWN"
-		result.ErrorDisplay = "Something went wrong"
-		result.ErrorMessage = err.Error()
-		c.JSON(http.StatusBadRequest, result)
-		return
+		return nil, serviceError.NewServiceError(err, "Ошибка при получении входных данных", err.Error(), "BIND")
 	}
 
 	// Вызов сервиса
 	dto, err := h.accountService.Create(&createAccountDto)
-
-	// Формирование ответа
 	if err != nil {
-		result.ErrorCode = "UNKNOWN"
-		result.ErrorDisplay = "Something went wrong"
-		result.ErrorMessage = err.Error()
-		c.JSON(http.StatusBadRequest, result)
-		return
+		return nil, err
 	}
-	result.Data = dto
-	c.JSON(http.StatusOK, result)
+
+	return dto, err
 }
 
-func (h *handler) ListAccountPage(c *gin.Context) {
-	// Модель ответа
-	result := adapters.ApiResult{}
-
+func (h *handler) ListAccountPage(c *gin.Context) (any, error) {
 	// Получение входных данных
 	var params struct {
 		PageIndex int `form:"pageIndex"`
@@ -65,24 +50,14 @@ func (h *handler) ListAccountPage(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindQuery(&params); err != nil {
-		result.ErrorCode = "UNKNOWN"
-		result.ErrorDisplay = "Something went wrong"
-		result.ErrorMessage = err.Error()
-		c.JSON(http.StatusBadRequest, result)
-		return
+		return nil, serviceError.NewServiceError(err, "Ошибка при получении входных данных", err.Error(), "BIND")
 	}
 
 	// Вызов сервиса
 	dto, err := h.accountService.ListPage(params.PageIndex, params.PageSize)
-
-	// Формирование ответа
 	if err != nil {
-		result.ErrorCode = "UNKNOWN"
-		result.ErrorDisplay = "Something went wrong"
-		result.ErrorMessage = err.Error()
-		c.JSON(http.StatusBadRequest, result)
-		return
+		return nil, err
 	}
-	result.Data = dto
-	c.JSON(http.StatusOK, result)
+
+	return dto, err
 }

@@ -6,6 +6,7 @@ import (
 	domainAccount "TransactionService/internal/domain/account"
 )
 
+// AccountComposite Структура для регистрации сервиса и хэндлера Account
 type AccountComposite struct {
 	Service account.Service
 	Handler api.Handler

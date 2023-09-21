@@ -2,12 +2,14 @@ package account
 
 import "time"
 
+// CreateAccountDto ДТО для создания Account
 type CreateAccountDto struct {
 	Owner    string `json:"owner"`
 	Balance  int64  `json:"balance"`
 	Currency string `json:"currency"`
 }
 
+// Dto ДТО для Account
 type Dto struct {
 	ID        int64     `json:"id"`
 	Owner     string    `json:"owner"`
@@ -17,13 +19,8 @@ type Dto struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// ShortDto ДТО для Account
 type ShortDto struct {
 	ID    int64  `json:"id"`
 	Owner string `json:"owner"`
-}
-
-type PageDto struct {
-	Items            any   `json:"items"`
-	CurrentPageIndex int   `json:"currentPageIndex"`
-	TotalCount       int64 `json:"totalCount"`
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// PostgresComposite Структура для регистрации ORM
 type PostgresComposite struct {
 	DB *gorm.DB
 }

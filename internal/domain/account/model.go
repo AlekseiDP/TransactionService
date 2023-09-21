@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Account модель сущности для БД
 type Account struct {
 	ID        int64     `gorm:"primaryKey" json:"id"`
 	Owner     string    `gorm:"not null" json:"owner"`

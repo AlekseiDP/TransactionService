@@ -1,0 +1,6 @@
+db:
+  host: localhost
+  user: pgsu
+  password: Qwerty123!
+  database: TransactionService
+  port: 5433

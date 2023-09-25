@@ -21,7 +21,11 @@ func NewService(db *gorm.DB) apiAccount.Service {
 
 // Create Функция создания записи Account
 func (s *service) Create(createAccountDto *apiAccount.CreateAccountDto) (*apiAccount.Dto, error) {
-	item := Account{Owner: createAccountDto.Owner, Balance: createAccountDto.Balance, Currency: createAccountDto.Currency}
+	var item Account
+	if err := mapper.AutoMapper(&createAccountDto, &item); err != nil {
+		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге CreateAccountDto", err.Error(), "MAP")
+	}
+
 	result := s.DB.Create(&item)
 	if result.Error != nil {
 		return nil, serviceError.NewServiceError(result.Error, "Ошибка при создании Account", result.Error.Error(), "DB")

@@ -8,6 +8,6 @@ dropdb:
 	docker exec -it postgres dropdb TransactionService
 
 migrate:
-	go run migration/migrate.go
+	go run migrate/migrate.go
 
 .PHONY: postgres createdb dropdb migrate

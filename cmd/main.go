@@ -29,6 +29,13 @@ func main() {
 	}
 	accountComposite.Handler.Register(r)
 
+	log.Print("Initializing user composite")
+	userComposite, err := composites.NewUserComposite(postgresComposite)
+	if err != nil {
+		log.Fatal("Error Initializing user composite")
+	}
+	userComposite.Handler.Register(r)
+
 	if err := r.Run(); err != nil {
 		log.Fatal("Error starting server")
 	}

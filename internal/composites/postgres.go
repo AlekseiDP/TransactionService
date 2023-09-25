@@ -1,9 +1,10 @@
 package composites
 
 import (
+	"TransactionService/internal/config"
+	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
 )
 
 // PostgresComposite Структура для регистрации ORM
@@ -12,8 +13,9 @@ type PostgresComposite struct {
 }
 
 func NewPostgresComposite() (*PostgresComposite, error) {
-	dsn := os.Getenv("CONNECTION_STRING")
-	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	databaseConfig := config.GetDatabaseConfig()
+	connectionString := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", databaseConfig.Db.Host, databaseConfig.Db.User, databaseConfig.Db.Password, databaseConfig.Db.Database, databaseConfig.Db.Port)
+	DB, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 
 	if err != nil {
 		return nil, err

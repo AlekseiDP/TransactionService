@@ -8,7 +8,7 @@ import (
 
 // UserComposite Структура для регистрации сервиса и хэндлера User
 type UserComposite struct {
-	Service user.Service
+	Service domainUser.Service
 	Handler api.Handler
 }
 

@@ -1,7 +1,6 @@
 package user
 
 import (
-	apiUser "TransactionService/internal/adapters/api/user"
 	"TransactionService/internal/domain/errors/serviceError"
 	"fmt"
 	"github.com/devfeel/mapper"
@@ -13,14 +12,14 @@ type service struct {
 	DB *gorm.DB
 }
 
-func NewService(db *gorm.DB) apiUser.Service {
+func NewService(db *gorm.DB) Service {
 	return &service{
 		DB: db,
 	}
 }
 
 // Create Функция создания записи User
-func (s *service) Create(createUserDto *apiUser.CreateUserDto) (*apiUser.Dto, error) {
+func (s *service) Create(createUserDto *CreateUserDto) (*Dto, error) {
 	var item User
 	if err := mapper.AutoMapper(&createUserDto, &item); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге createUserDto", err.Error(), "MAP")
@@ -31,7 +30,7 @@ func (s *service) Create(createUserDto *apiUser.CreateUserDto) (*apiUser.Dto, er
 		return nil, serviceError.NewServiceError(result.Error, "Ошибка при создании User", result.Error.Error(), "DB")
 	}
 
-	var dto apiUser.Dto
+	var dto Dto
 	if err := mapper.AutoMapper(&item, &dto); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге User", err.Error(), "MAP")
 	}
@@ -40,7 +39,7 @@ func (s *service) Create(createUserDto *apiUser.CreateUserDto) (*apiUser.Dto, er
 }
 
 // GetByEmail Функция получения записи User по Email
-func (s *service) GetByEmail(email string) (*apiUser.Dto, error) {
+func (s *service) GetByEmail(email string) (*Dto, error) {
 	var item User
 	result := s.DB.Where("email = ?", email).First(&item)
 	if result.Error != nil {
@@ -51,7 +50,7 @@ func (s *service) GetByEmail(email string) (*apiUser.Dto, error) {
 		return nil, serviceError.NewServiceError(result.Error, "Ошибка при получении User", result.Error.Error(), "DB")
 	}
 
-	var dto apiUser.Dto
+	var dto Dto
 	if err := mapper.AutoMapper(&item, &dto); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге User", err.Error(), "MAP")
 	}
@@ -60,14 +59,14 @@ func (s *service) GetByEmail(email string) (*apiUser.Dto, error) {
 }
 
 // GetByRefreshToken Функция получения записи User по RefreshToken
-func (s *service) GetByRefreshToken(refreshToken string) (*apiUser.Dto, error) {
+func (s *service) GetByRefreshToken(refreshToken string) (*Dto, error) {
 	var item User
 	result := s.DB.Where("refreshToken = ?", refreshToken).First(&item)
 	if result.Error != nil {
 		return nil, serviceError.NewServiceError(result.Error, "Ошибка при получении User", result.Error.Error(), "DB")
 	}
 
-	var dto apiUser.Dto
+	var dto Dto
 	if err := mapper.AutoMapper(&item, &dto); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге User", err.Error(), "MAP")
 	}

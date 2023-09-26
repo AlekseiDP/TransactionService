@@ -1,6 +1,8 @@
 package account
 
-import "TransactionService/internal/adapters/api"
+import (
+	"TransactionService/internal/adapters/api"
+)
 
 type Service interface {
 	Create(createAccountDto *CreateAccountDto) (*Dto, error)

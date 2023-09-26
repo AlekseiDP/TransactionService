@@ -8,7 +8,7 @@ import (
 
 // AccountComposite Структура для регистрации сервиса и хэндлера Account
 type AccountComposite struct {
-	Service account.Service
+	Service domainAccount.Service
 	Handler api.Handler
 }
 

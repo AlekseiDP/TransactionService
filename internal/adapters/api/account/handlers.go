@@ -3,6 +3,7 @@ package account
 import (
 	"TransactionService/internal/adapters/api"
 	"TransactionService/internal/adapters/middleware"
+	"TransactionService/internal/domain/account"
 	"TransactionService/internal/domain/errors/serviceError"
 	"github.com/gin-gonic/gin"
 )
@@ -14,21 +15,21 @@ const (
 
 // handler структура для обработки Http запросов
 type handler struct {
-	accountService Service
+	accountService account.Service
 }
 
-func NewHandler(service Service) api.Handler {
+func NewHandler(service account.Service) api.Handler {
 	return &handler{accountService: service}
 }
 
 func (h *handler) Register(engine *gin.Engine) {
-	engine.POST(createAccountUrl, middleware.Middleware(h.CreateAccount))
-	engine.GET(listAccountPageUrl, middleware.Middleware(h.ListAccountPage))
+	engine.POST(createAccountUrl, middleware.ErrorMiddleware(h.CreateAccount))
+	engine.GET(listAccountPageUrl, middleware.ErrorMiddleware(h.ListAccountPage))
 }
 
 func (h *handler) CreateAccount(c *gin.Context) (any, error) {
 	// Получение входных данных
-	createAccountDto := CreateAccountDto{}
+	createAccountDto := account.CreateAccountDto{}
 	if err := c.ShouldBindJSON(&createAccountDto); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при получении входных данных", err.Error(), "BIND")
 	}

@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+var once sync.Once
+
 type DatabaseConfig struct {
 	Db struct {
 		Host     string `yaml:"host" env:"DB_HOST" env-default:"localhost"`
@@ -17,7 +19,6 @@ type DatabaseConfig struct {
 }
 
 var databaseConfig *DatabaseConfig
-var once sync.Once
 
 func GetDatabaseConfig() *DatabaseConfig {
 	once.Do(func() {

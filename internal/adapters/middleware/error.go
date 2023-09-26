@@ -11,8 +11,8 @@ import (
 
 type appHandler func(c *gin.Context) (any, error)
 
-// Middleware Middleware для обработки результата запроса
-func Middleware(h appHandler) gin.HandlerFunc {
+// ErrorMiddleware Middleware для обработки результата запроса
+func ErrorMiddleware(h appHandler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Модель ответа
 		result := api.ResultModel{}

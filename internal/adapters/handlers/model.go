@@ -1,4 +1,4 @@
-package api
+package handlers
 
 // ResultModel модель для обертки ответа сервиса
 type ResultModel struct {

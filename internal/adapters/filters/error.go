@@ -1,7 +1,7 @@
-package middleware
+package filters
 
 import (
-	"TransactionService/internal/adapters/api"
+	"TransactionService/internal/adapters/handlers"
 	"TransactionService/internal/domain/errors/serviceError"
 	"errors"
 	"github.com/gin-gonic/gin"
@@ -11,11 +11,11 @@ import (
 
 type appHandler func(c *gin.Context) (any, error)
 
-// ErrorMiddleware Middleware для обработки результата запроса
-func ErrorMiddleware(h appHandler) gin.HandlerFunc {
+// HandleError Middleware для обработки результата запроса
+func HandleError(h appHandler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Модель ответа
-		result := api.ResultModel{}
+		result := handlers.ResultModel{}
 
 		// Обработка ошибок
 		var serviceErr *serviceError.ServiceError
@@ -29,20 +29,20 @@ func ErrorMiddleware(h appHandler) gin.HandlerFunc {
 					result.ErrorDevelopment = serviceErr.DeveloperMessage
 				}
 
+				result.ErrorCode = serviceErr.Code
+				result.ErrorMessage = serviceErr.Message
+
 				if serviceErr.Code == "NOT_FOUND" {
-					result.ErrorCode = serviceErr.Code
-					result.ErrorMessage = serviceErr.Message
 					c.JSON(http.StatusNotFound, result)
 					return
 				} else if serviceErr.Code == "VALIDATION" {
-					result.ErrorCode = serviceErr.Code
-					result.ErrorMessage = serviceErr.DeveloperMessage
 					c.JSON(http.StatusBadRequest, result)
+					return
+				} else if serviceErr.Code == "REFRESH_TOKEN" || serviceErr.Code == "AUTH" {
+					c.JSON(http.StatusUnauthorized, result)
 					return
 				}
 
-				result.ErrorCode = serviceErr.Code
-				result.ErrorMessage = serviceErr.Message
 				c.JSON(http.StatusBadRequest, result)
 				return
 			}

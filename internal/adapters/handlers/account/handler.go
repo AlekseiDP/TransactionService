@@ -1,16 +1,11 @@
 package account
 
 import (
-	"TransactionService/internal/adapters/api"
-	"TransactionService/internal/adapters/middleware"
+	"TransactionService/internal/adapters/filters"
+	"TransactionService/internal/adapters/handlers"
 	"TransactionService/internal/domain/account"
 	"TransactionService/internal/domain/errors/serviceError"
 	"github.com/gin-gonic/gin"
-)
-
-const (
-	createAccountUrl   = "/accounts"
-	listAccountPageUrl = "/accounts/paginated"
 )
 
 // handler структура для обработки Http запросов
@@ -18,13 +13,21 @@ type handler struct {
 	accountService account.Service
 }
 
-func NewHandler(service account.Service) api.Handler {
+const (
+	createAccountUrl = "/api/v1/accounts"
+	listAccountsUrl  = "/api/v1/accounts/paged"
+)
+
+func NewHandler(service account.Service) handlers.Handler {
 	return &handler{accountService: service}
 }
 
 func (h *handler) Register(engine *gin.Engine) {
-	engine.POST(createAccountUrl, middleware.ErrorMiddleware(h.CreateAccount))
-	engine.GET(listAccountPageUrl, middleware.ErrorMiddleware(h.ListAccountPage))
+	authorized := engine.Group("/", filters.CheckAuthorized)
+	{
+		authorized.POST(createAccountUrl, filters.HandleError(h.CreateAccount))
+		authorized.GET(listAccountsUrl, filters.HandleError(h.ListAccountPage))
+	}
 }
 
 func (h *handler) CreateAccount(c *gin.Context) (any, error) {

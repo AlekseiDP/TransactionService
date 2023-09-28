@@ -1,7 +1,7 @@
 package account
 
 import (
-	"TransactionService/internal/adapters/api"
+	"TransactionService/internal/adapters/handlers"
 	"TransactionService/internal/domain/errors/serviceError"
 	"github.com/devfeel/mapper"
 	"gorm.io/gorm"
@@ -39,7 +39,7 @@ func (s *service) Create(createAccountDto *CreateAccountDto) (*Dto, error) {
 }
 
 // ListPage Функция получения постраничного списка Account
-func (s *service) ListPage(pageIndex, pageSize int) (*api.PageableModel, error) {
+func (s *service) ListPage(pageIndex, pageSize int) (*handlers.PageableModel, error) {
 	var items []Account
 	var count int64
 	result1 := s.DB.Limit(pageSize).Offset(pageIndex * pageSize).Find(&items)
@@ -57,7 +57,7 @@ func (s *service) ListPage(pageIndex, pageSize int) (*api.PageableModel, error) 
 		return nil, serviceError.NewServiceError(err, "Ошибка при маппинге Account", err.Error(), "MAP")
 	}
 
-	pageDto := api.PageableModel{
+	pageDto := handlers.PageableModel{
 		Items:            dto,
 		CurrentPageIndex: pageIndex,
 		TotalCount:       count,

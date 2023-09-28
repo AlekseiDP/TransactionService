@@ -1,27 +1,23 @@
-package composites
+package initializers
 
 import (
 	"TransactionService/internal/config"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
-// PostgresComposite Структура для регистрации ORM
-type PostgresComposite struct {
-	DB *gorm.DB
-}
+var DB *gorm.DB
 
-func NewPostgresComposite() (*PostgresComposite, error) {
+func ConnectToDb() {
+	log.Print("Initializing db connection")
+	var err error
 	databaseConfig := config.GetDatabaseConfig()
 	connectionString := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", databaseConfig.Db.Host, databaseConfig.Db.User, databaseConfig.Db.Password, databaseConfig.Db.Database, databaseConfig.Db.Port)
-	DB, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 
 	if err != nil {
-		return nil, err
+		log.Fatal(fmt.Sprintf("Error initializing db connection: %v", err.Error()))
 	}
-
-	return &PostgresComposite{
-		DB: DB,
-	}, nil
 }

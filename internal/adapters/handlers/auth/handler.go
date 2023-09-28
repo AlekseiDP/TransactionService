@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"TransactionService/internal/adapters/api"
-	"TransactionService/internal/adapters/middleware"
+	"TransactionService/internal/adapters/filters"
+	"TransactionService/internal/adapters/handlers"
 	"TransactionService/internal/domain/auth"
 	"TransactionService/internal/domain/errors/serviceError"
 	"github.com/gin-gonic/gin"
@@ -18,13 +18,13 @@ type handler struct {
 	authService auth.Service
 }
 
-func NewHandler(service auth.Service) api.Handler {
+func NewHandler(service auth.Service) handlers.Handler {
 	return &handler{authService: service}
 }
 
 func (h *handler) Register(engine *gin.Engine) {
-	engine.POST(signOnUrl, middleware.ErrorMiddleware(h.SignOn))
-	engine.POST(getTokenUrl, middleware.ErrorMiddleware(h.GetToken))
+	engine.POST(signOnUrl, filters.HandleError(h.SignOn))
+	engine.POST(getTokenUrl, filters.HandleError(h.GetToken))
 }
 
 func (h *handler) SignOn(c *gin.Context) (any, error) {

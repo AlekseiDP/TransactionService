@@ -1,5 +1,7 @@
 package auth
 
 type Service interface {
-	SignOn(signOnDto *SignOnDto) (*Dto, error)
+	Register(signOnDto *RegisterDto) (*Dto, error)
+	GetToken(signInDto *GetTokenDto) (*Dto, error)
+	RefreshToken(refreshTokenDto *RefreshTokenDto) (*Dto, error)
 }

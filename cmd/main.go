@@ -36,6 +36,13 @@ func main() {
 	}
 	userComposite.Handler.Register(r)
 
+	log.Print("Initializing auth composite")
+	authComposite, err := composites.NewAuthComposite(postgresComposite)
+	if err != nil {
+		log.Fatal("Error Initializing auth composite")
+	}
+	authComposite.Handler.Register(r)
+
 	if err := r.Run(); err != nil {
 		log.Fatal("Error starting server")
 	}

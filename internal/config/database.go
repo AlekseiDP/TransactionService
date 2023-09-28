@@ -6,8 +6,6 @@ import (
 	"sync"
 )
 
-var once sync.Once
-
 type DatabaseConfig struct {
 	Db struct {
 		Host     string `yaml:"host" env:"DB_HOST" env-default:"localhost"`
@@ -19,9 +17,10 @@ type DatabaseConfig struct {
 }
 
 var databaseConfig *DatabaseConfig
+var once1 sync.Once
 
 func GetDatabaseConfig() *DatabaseConfig {
-	once.Do(func() {
+	once1.Do(func() {
 		databaseConfig = &DatabaseConfig{}
 		if err := cleanenv.ReadConfig("config.yml", databaseConfig); err != nil {
 			help, _ := cleanenv.GetDescription(databaseConfig, nil)

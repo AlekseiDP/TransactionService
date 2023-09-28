@@ -1,53 +1,49 @@
-package account
+package user
 
 import (
 	"TransactionService/internal/adapters/api"
 	"TransactionService/internal/adapters/middleware"
-	"TransactionService/internal/domain/account"
 	"TransactionService/internal/domain/errors/serviceError"
+	"TransactionService/internal/domain/user"
 	"github.com/gin-gonic/gin"
 )
 
 const (
-	createAccountUrl   = "/accounts"
-	listAccountPageUrl = "/accounts/paginated"
+	createUserUrl = "/users"
+	getUserUrl    = "/users"
 )
 
 // handler структура для обработки Http запросов
 type handler struct {
-	accountService account.Service
+	userService user.Service
 }
 
-func NewHandler(service account.Service) api.Handler {
-	return &handler{accountService: service}
+func NewHandler(service user.Service) api.Handler {
+	return &handler{userService: service}
 }
 
 func (h *handler) Register(engine *gin.Engine) {
-	engine.POST(createAccountUrl, middleware.ErrorMiddleware(h.CreateAccount))
-	engine.GET(listAccountPageUrl, middleware.ErrorMiddleware(h.ListAccountPage))
+	engine.POST(createUserUrl, middleware.ErrorMiddleware(h.CreateUser))
+	engine.GET(getUserUrl, middleware.ErrorMiddleware(h.GetUser))
 }
 
-func (h *handler) CreateAccount(c *gin.Context) (any, error) {
+func (h *handler) CreateUser(c *gin.Context) (any, error) {
 	// Получение входных данных
-	createAccountDto := account.CreateAccountDto{}
+	createAccountDto := user.CreateUserDto{}
 	if err := c.ShouldBindJSON(&createAccountDto); err != nil {
 		return nil, serviceError.NewServiceError(err, "Ошибка при получении входных данных", err.Error(), "BIND")
 	}
 
 	// Вызов сервиса
-	dto, err := h.accountService.Create(&createAccountDto)
-	if err != nil {
-		return nil, err
-	}
+	dto, err := h.userService.Create(&createAccountDto)
 
 	return dto, err
 }
 
-func (h *handler) ListAccountPage(c *gin.Context) (any, error) {
+func (h *handler) GetUser(c *gin.Context) (any, error) {
 	// Получение входных данных
 	var params struct {
-		PageIndex int `form:"pageIndex"`
-		PageSize  int `form:"pageSize"`
+		Email string `form:"email"`
 	}
 
 	if err := c.ShouldBindQuery(&params); err != nil {
@@ -55,10 +51,7 @@ func (h *handler) ListAccountPage(c *gin.Context) (any, error) {
 	}
 
 	// Вызов сервиса
-	dto, err := h.accountService.ListPage(params.PageIndex, params.PageSize)
-	if err != nil {
-		return nil, err
-	}
+	dto, err := h.userService.GetByEmail(params.Email)
 
 	return dto, err
 }

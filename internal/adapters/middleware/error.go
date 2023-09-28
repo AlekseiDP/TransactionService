@@ -43,7 +43,7 @@ func ErrorMiddleware(h appHandler) gin.HandlerFunc {
 
 				result.ErrorCode = serviceErr.Code
 				result.ErrorMessage = serviceErr.Message
-				c.JSON(http.StatusInternalServerError, result)
+				c.JSON(http.StatusBadRequest, result)
 				return
 			}
 

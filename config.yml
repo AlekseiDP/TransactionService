@@ -4,10 +4,9 @@ db:
   password: Qwerty123!
   database: TransactionService
   port: 5433
-  
 jwt:
   issuer: http://localhost:3000
   audience: TransactionService
-  accessTokenLifetime: 900
-  refreshTokenLifetime: 259200
+  accessTokenLifetime: 900s
+  refreshTokenLifetime: 259200s
   secret: MySuperSecretKey
